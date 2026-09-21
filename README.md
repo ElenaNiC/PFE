@@ -13,3 +13,13 @@ To loop over a set of acquisition parameters, run `dark_estimation_loop.py`, adj
 
 In future the data may be uploaded to the PILOT, in which case the `download_data.py` script can be used.
 
+## Gain Conversion
+
+To calculate the gain images for a given camera configuration, run `conversion_gain_estim.py`.
+
+> **Note:** once again, the raw bright data must be stored on your local machine.
+
+Two methods for calculating a constant gain parameter per camera configuration are implemented compared:
+**Flatfield Pair Method** Expected value and variation of count rate calculated from Photon Transfer Curve using spatial averaging over pixels in a region of interest -> technically only two acquisitions are needed, but here I also averaged temporally (over 500 pairs) because I had 1000 acquisiitons per intensity level. 
+
+**Temporal Estimate Method** Gain value calculated per pixel from expected value and variation images, which are the temporal everage over 1000 aqcuisitions. The constant gain is then the spatial average within a region of interest. 
