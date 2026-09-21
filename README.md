@@ -6,26 +6,10 @@ Scripts for estimating dark noise images and constants from dark acquisitions.
 
 > **Note:** the raw dark data must be stored on your local machine. The dark acquisitions used in this project were saved locally and were never uploaded to the PILOT.
 
-### Scripts
 
-| Script | Purpose |
-|---|---|
-| `dark_estimation.py` | Computes the dark noise images and constants for a single acquisition configuration. |
-| `dark_estimation_loop.py` | Runs the same calculation over a set of acquisition parameters. Adjust the parameters at the top of the script. |
-| `download_data.py` | Downloads data from the PILOT. Not needed for now, but usable if the data is uploaded there in future. |
+To reproduce the calculation of the dark noise images and constants for a given acquisition configuration, run `dark_estimation.py`.
 
-### Usage
+To loop over a set of acquisition parameters, run `dark_estimation_loop.py`, adjusting it to the desired parameters.
 
-**Single configuration**
+Again, the data must already be saved on local. In future the data may be uploaded to the PILOT, in which case the `download_data.py` script can be used.
 
-```bash
-python dark_estimation.py
-```
-
-**Loop over several configurations**
-
-```bash
-python dark_estimation_loop.py
-```
-
-Before running either script, make sure the raw data folder is on your machine and that the path in the script points to it.
