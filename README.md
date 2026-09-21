@@ -2,7 +2,7 @@
 
 ## Dark Noise
 
-Scripts for estimating dark noise images and constants from dark acquisitions.
+Scripts for estimating dark noise images and constants from dark acquisitions
 
 > **Note:** the raw dark data must already be stored on your local machine. The dark acquisitions used in this project were saved locally and were never uploaded to the PILOT.
 
@@ -14,6 +14,8 @@ To loop over a set of acquisition parameters, run `dark_estimation_loop.py`, adj
 In future the data may be uploaded to the PILOT, in which case the `download_data.py` script can be used.
 
 ## Gain Conversion
+
+Gain conversion images (gain per pixel) and gain constants (average over pixels in gain image) were calculated from a set of uniformly illuminated acquisitions.
 
 To calculate the gain images for a given camera configuration, run `conversion_gain_estim.py`.
 
