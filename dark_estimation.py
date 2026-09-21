@@ -47,11 +47,11 @@ dark_images.shape
 
 # SAVE DATA
 
-os.makedirs("CalibrationData", exist_ok=True)
-np.save(f"CalibrationData/dark_images_binned_x{bin_fact}_{ti}_{G}.npy", dark_images)
+os.makedirs("CalibrationData/dark", exist_ok=True)
+np.save(f"CalibrationData/dark/dark_images_binned_x{bin_fact}_{ti}_{G}.npy", dark_images)
 
 #%% LOAD SAVED DARK IMAGES AND CALCULATE DARK MEAN IMAGE AND DARK VARIANCE IMAGE
-dark_images = np.load(f"CalibrationData/dark_images_binned_x{bin_fact}_{ti}_{G}.npy")
+dark_images = np.load(f"CalibrationData/dark/dark_images_binned_x{bin_fact}_{ti}_{G}.npy")
 
 mu_dark_image = dark_images.mean(axis=0)
 var_dark_image = dark_images.var(axis=0, ddof=1)
@@ -100,8 +100,8 @@ plt.colorbar(im, ax=axs[2], orientation='horizontal')
 
 # %% SAVE DATA
 import os
-os.makedirs("CalibrationData", exist_ok=True)
-np.save(f"CalibrationData/mu_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", mu_dark_image)
-np.save(f"CalibrationData/var_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", var_dark_image)
-np.save(f"CalibrationData/sigma_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", sigma_dark_image)
+os.makedirs("CalibrationData/dark", exist_ok=True)
+np.save(f"CalibrationData/dark/mu_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", mu_dark_image)
+np.save(f"CalibrationData/dark/var_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", var_dark_image)
+np.save(f"CalibrationData/dark/sigma_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", sigma_dark_image)
 
