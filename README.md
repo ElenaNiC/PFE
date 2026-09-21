@@ -1,4 +1,7 @@
 # PFE
+## Downloading raw data
+Run `download_data.py`to download raw v2 data from PILOT.
+> **Note:** the raw data for some versions (eg lisaCat) are not stored in dictionaries and so had to be downloaded in a different manner, see second half of script.
 
 ## Dark Noise
 Dark noise images and constants were estimated from a set of dark acquisitions

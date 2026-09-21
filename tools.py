@@ -372,3 +372,118 @@ class AcquisitionParameters:
 
         self.timestamps = timestamps
         self.measurement_time = measurement_time
+
+
+        import json
+import ast
+import numpy as np
+from pathlib import Path
+import imageio.v3 as iio
+import matplotlib.pyplot as plt
+
+def binArray(data, axis, binstep, binsize, func=np.nanmean):
+
+    data = np.array(data)
+    dims = np.array(data.shape)
+    argdims = np.arange(data.ndim)
+    argdims[0], argdims[axis]= argdims[axis], argdims[0]
+    data = data.transpose(argdims)
+    data = [func(np.take(data,np.arange(int(i*binstep),int(i*binstep+binsize)),0),0) for i in np.arange(dims[axis]//binstep)]
+    data = np.array(data).transpose(argdims)
+    return data
+
+def load_experiment(exp_dir: str | Path, gr: int, lc: str, file_prefix: str = "spectral") -> dict:
+    exp_dir = Path(exp_dir)
+    meta_path = exp_dir / "metadata.json"
+    raw_dir = exp_dir / "raw_data"
+    overview_dir = exp_dir / "overview"
+
+    with open(meta_path, "r") as f:
+        metadata = json.load(f)
+
+    acq = metadata[-1]
+    dmd = metadata[0]
+
+    wavelengths = np.array(ast.literal_eval(acq["wavelengths"]), dtype=float)
+    Lc = np.array(ast.literal_eval(acq["Lc"]), dtype=float)[0][0]
+
+    patterns = acq["patterns"]
+    p_x = acq["pattern_dimension_x"]
+    p_y = acq["pattern_dimension_y"]
+    M = int(dmd["patterns"])
+
+    # build filenames in guaranteed numeric order
+    files = [
+        raw_dir / f"{file_prefix}_NR_0_Gr_{gr}_Lc_{lc}nm_NA_0_NS_{k}.npz"
+        for k in range(M)
+    ]
+
+    missing = [f for f in files if not f.exists()]
+    if missing:
+        raise FileNotFoundError(
+            f"Missing {len(missing)} files, first missing: {missing[0]}"
+        )
+
+    first = np.load(files[0], allow_pickle=True)["arr_0"].astype(np.float32)
+    N, L = first.shape
+
+    if L != len(wavelengths):
+        print(f"Warning: file has L={L} channels, metadata has {len(wavelengths)} wavelengths")
+
+    y = np.empty((M, N, L), dtype=np.float32)
+    y[0] = first
+
+    for k, f in enumerate(files[1:], start=1):
+        arr = np.load(f, allow_pickle=True)["arr_0"].astype(np.float32)
+        if arr.shape != (N, L):
+            raise ValueError(f"Shape mismatch in {f.name}: got {arr.shape}, expected {(N, L)}")
+        y[k] = arr
+
+    
+    raw_data = np.moveaxis(y, 0, -1) # N,L,P
+    
+
+    bin_fact =  N / (M//2)
+
+    if bin_fact == 1:
+        spectral_data_all = raw_data.astype(float, copy=True)
+    else:
+        spectral_data_all = binArray(raw_data, 0, bin_fact, bin_fact)
+    
+
+  #  spectral_data_all = (spectral_data_all - spectral_data_all.min()) / (spectral_data_all.max() - spectral_data_all.min())
+    f = raw_dir / f"spatial_NR_0_Gr_{gr}_Lc_{lc}nm_NA_0_NS_1.npz"
+    data = np.load(f)
+
+    spatial_data = data[data.files[0]]
+
+
+    # bin_img   = iio.imread(overview_dir / "spectral_BIN_IMAGE_had_reco.png")
+    # gray_img  = iio.imread(overview_dir / "spectral_GRAY_IMAGE_had_reco.png")
+    # rgb_img   = iio.imread(overview_dir / "spectral_RGB_IMAGE_had_reco.png")
+    # slice_img = iio.imread(overview_dir / "spectral_SLICE_IMAGE_had_reco.png")
+    # spectra   = iio.imread(overview_dir / "spectral_SPECTRA_PLOT_had_reco.png")
+
+    return {
+        "dir": exp_dir,
+        "metadata": metadata,
+        "acq": acq,
+        "wavelengths": wavelengths,
+        "Lc": Lc,
+        "patterns": patterns,
+        "pattern_dimension_x": p_x,
+        "pattern_dimension_y": p_y,
+        "M": M,
+        "N": N,
+        "L": L,
+        "y": y,
+        "raw_data": raw_data,
+        "spectral_data_all": spectral_data_all,
+        # "bin_img": bin_img,
+        # "gray_img": gray_img,
+        # "rgb_img": rgb_img,
+        # "slice_img": slice_img,
+        # "spectra": spectra,
+        "spatial_data": spatial_data,
+    }
+

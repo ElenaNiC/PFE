@@ -58,4 +58,46 @@ for ds in datasets:
         print(f"Unable to download data from the Pilot warehouse ({ds['subfolder']})")
         print(e)
 
+# %% Some data on the PILOT is saved in a different form
+from tools import load_experiment
+import numpy as np
+
+# download folder from PILOT, saved to the following path
+# choose data to read in 
+selected_paths = {
+    
+    # "cat": (Path("obj_cat_Lc_18.06dB_source_white_LED_Lc_540nm_Gr_1_Walsh_im_32x32_ti_1.0ms_zoom_x2"), 1),
+    #"cat": (Path("obj_cat_Lc_18.06dB_source_white_LED_Lc_540nm_Gr_2_Walsh_im_128x128_ti_1.0ms_zoom_x2"), 2)
+   # "cat": (Path("obj_cat_Lc_18.06dB_source_white_LED_Lc_540nm_Gr_2_Walsh_im_64x64_ti_1.0ms_zoom_x2"), 2),
+
+    "cat" : (Path("C:/Users/ceidigh/Documents/2026-05-05_calib_bruit/obj_cat_12dB_source_white_LED_Lc_600nm_Gr_2_Walsh_im_128x128_ti_2.0ms_zoom_x1"), 2, "600")
+}
+
+datasets = {
+    name: load_experiment(path, gr=gr, lc=lc)
+    for name, (path, gr,lc) in selected_paths.items()
+}
+
+
+# extract info - make this more general someday
+data = datasets["cat"]
+
+# dimensions
+M = data["M"]
+N = data["N"]
+L = data["L"]
+
+patterns = data["patterns"]
+wavelengths = data["wavelengths"]
+Lc = data["Lc"]
+
+# measurements
+raw_data = data["raw_data"]  # shape (N,L,P) unbinned
+spectral_data_all = data["spectral_data_all"] # shape (N,L,P) binned
+spatial_data = data["spatial_data"]
+
+import os
+os.makedirs("data/cat", exist_ok=True)
+np.save("data/cat/formatted_spectral_data.npy", spectral_data_all)
+
 # %%

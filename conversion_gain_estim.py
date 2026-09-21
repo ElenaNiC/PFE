@@ -9,13 +9,15 @@ import os
 os.makedirs("CalibrationData/bright", exist_ok=True)
 #%% params
 bin_fact = 3
-G = 18.06 # 12.04 # 6.02 # 0.0
+G = 0 # 12.04 # 6.02 # 0
+
+# used for dark - all bright images were acquired at 1.5ms
 ti = 1.0 # 10.0 # 100.0 #1000.0
 
 
 # Acquired bright images - local 
 data_folder = Path(r"C:/Users/ceidigh/Documents/2026-05-05_calib_bruit/white")
-intensities = ["ND0", "ND1", "ND2", "ND3", "ND4"]
+intensities = ["ND0", "ND1", "ND2"] #, "ND3", "ND4"]
 
 # ROI - ADD SCRIPTS WHERE THIS WAS CHOOSEN!!!
 x1, x2 = 75,95
@@ -78,16 +80,16 @@ var_g1 = variances_g1[0:1,:].mean(0)
 
 
 # save all the bright images
-np.save(f'CalibrationData/bright/all_bright_images_bin_x{bin_fact}.npy', all_bright_images)
+np.save(f'CalibrationData/bright/all_bright_images_bin_x{bin_fact}_{G}.npy', all_bright_images)
 
 # save the average mu & sigma value, per ND, accross all 500 pairs
-np.save(f'CalibrationData/bright/mu_g1_bin_x{bin_fact}.npy', signals_g1.mean(0))
-np.save(f'CalibrationData/bright/var_g1_bin_x{bin_fact}.npy', variances_g1.mean(0))
+np.save(f'CalibrationData/bright/mu_g1_bin_x{bin_fact}_{G}.npy', signals_g1.mean(0))
+np.save(f'CalibrationData/bright/var_g1_bin_x{bin_fact}_{G}.npy', variances_g1.mean(0))
 
 # %% TEMPORAL ESTIMATOR
 
 # load all images - prepocessed in previous 
-all_ims = np.load(f"CalibrationData/bright/all_bright_images_bin_x{bin_fact}.npy") - mu_dark[None, None, :, :]
+all_ims = np.load(f"CalibrationData/bright/all_bright_images_bin_x{bin_fact}_{G}.npy") - mu_dark[None, None, :, :]
 
 # calculate and store average mu and variance images
 sum_frames = all_ims.sum(0)
@@ -95,7 +97,122 @@ sum_ROI = sum_frames[:, x1:x2, y1:y2]
 signals_g2 = (sum_ROI / 1000).mean((1,2))
 variances_g2 = (all_ims[:, :, x1:x2, y1:y2].var(axis=0, ddof=1)- var_dark[x1:x2,y1:y2]).mean((1,2)) 
 
-np.save(f'CalibrationData/bright/mu_g2_bin_x{bin_fact}.npy', signals_g2)
-np.save(f'CalibrationData/bright/var_g2_bin_x{bin_fact}.npy', variances_g2)
+np.save(f'CalibrationData/bright/mu_g2_bin_x{bin_fact}_{G}.npy', signals_g2)
+np.save(f'CalibrationData/bright/var_g2_bin_x{bin_fact}_{G}.npy', variances_g2)
+
+#%% GAIN PER PIXEL WITH TEMPORAL ESTIMATOR
+
+# average bright mu and var images, one per intensity 
+mu_bright_image = np.load(f"CalibrationData/bright/all_bright_images_bin_x{bin_fact}_{G}.npy").mean(0) - mu_dark
+var_bright_image = np.load(f"CalibrationData/bright/all_bright_images_bin_x{bin_fact}_{G}.npy").var(axis=0,ddof=1) - var_dark
+
+x = mu_bright_image              # (5,128,608)
+y = var_bright_image
+
+# mean across ND levels
+x_bar = x.mean(axis=0)
+y_bar = y.mean(axis=0)
+
+# Least-squares slope
+num = np.sum((x - x_bar) * (y - y_bar), axis=0)
+den = np.sum((x - x_bar) ** 2, axis=0)
+
+gain_image = num / den
+
+# Corresponding intercept map
+intercept_image = y_bar - gain_image * x_bar
+
+print(f"ROI gain mean : {gain_image[x1:x2,y1:y2].mean():.5f}")
+print(f"ROI gain std  : {gain_image[x1:x2,y1:y2].std():.5f}")
+
+#%% PLOT GAIN MAP
+plt.figure(figsize=(10,4))
+
+plt.subplot(121)
+plt.imshow(gain_image)
+plt.xlabel(r'$\Lambda$')
+plt.ylabel(r'$N_y$')
+plt.title(
+    f"Gain map for {G} dB\n"
+    + rf"$\bar{{\gamma}}_{{ROI}}$ = {gain_image[x1:x2, y1:y2].mean():.5f} $\pm$ {gain_image[x1:x2,y1:y2].std():.5f} counts/photon" 
+)
+plt.colorbar(orientation='horizontal')
+
+#%% PLOT AVERAGE GAIN VALUE
+fig, axs = plt.subplots(1, 2, figsize=(8, 6))
+fig.suptitle(f"{G}\nPhoton Transfer Curve ( FFP vs Temporal Estimator)", fontsize=16)
+
+labels = ["ND0", "ND1", "ND2", "ND3", "ND4"]
+
+
+# =========================
+# COLUMN 1 — AVERAGE
+# =========================
+x = mu_g1
+y = var_g1
+
+slope, intercept = np.polyfit(x, y, 1)
+
+x_fit = np.linspace(x.min(), x.max(), 200)
+y_fit = slope * x_fit + intercept
+
+axs[0].plot(x_fit, y_fit, '--r', label=f"fit")
+axs[0].text(0.05, 0.95,
+              f"slope = {slope:.3e}",
+            #   f"slope = {slope:.3e}\nG = {1/slope:.3e}",
+              transform=axs[0].transAxes,
+              va='top',
+              bbox=dict(facecolor='white', alpha=0.7))
+
+for xk, yk, lab in zip(x, y, labels):
+    axs[0].plot(xk, yk, 'o', label=lab)
+
+axs[0].plot(x, y, '-k', alpha=0.5)
+axs[0].set_title("Flatfield Pair PTC")
+axs[0].set_xlabel(rf"Mean signal $\bar{{S}}$")
+axs[0].set_ylabel("Variance σ²")
+axs[0].grid(True)
+axs[0].legend()
+
+slope_g1 = slope
+# =========================
+# COLUMN 2 — PRESUMED AVG
+# =========================
+x = signals_g2
+y = variances_g2
+
+slope, intercept = np.polyfit(x, y, 1)
+
+x_fit = np.linspace(x.min(), x.max(), 200)
+y_fit = slope * x_fit + intercept
+
+axs[1].plot(x_fit, y_fit, '--r', label=f"fit")
+axs[1].text(0.05, 0.95,
+              f"slope = {slope:.3e}",
+            #   f"slope = {slope:.3e}\nG = {1/slope:.3e}",
+              transform=axs[1].transAxes,
+              va='top',
+              bbox=dict(facecolor='white', alpha=0.7))
+
+for xk, yk, lab in zip(x, y, labels):
+    axs[1].plot(xk, yk, 'o', label=lab)
+
+axs[1].plot(x, y, '-k', alpha=0.5)
+axs[1].set_title("Temporal Estimation PTC")
+axs[1].set_xlabel(rf"Mean signal $\bar{{S}}$")
+axs[1].set_ylabel("Variance σ²")
+axs[1].grid(True)
+axs[1].legend()
+
+slope_g2 = slope
+
+plt.tight_layout()
+plt.show()
+
+# %% SAVE GAIN ESTIMATIONS
+np.save(f"CalibrationData/bright/slope_g1_bin_x{bin_fact}_{G}.npy", slope_g1)
+np.save(f"CalibrationData/bright/slope_g2_bin_x{bin_fact}_{G}.npy", slope_g2)
+np.save(f"CalibrationData/bright/slope_g3_bin_x{bin_fact}_{G}.npy", gain_image[x1:x2, y1:y2].mean())
+np.save(f"CalibrationData/gain_image_bin_x{bin_fact}_{G}.npy", gain_image)
 
 # %%
