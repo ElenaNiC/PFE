@@ -1,6 +1,8 @@
 # PFE
 ## Dark Noise
-To reproduce the calculation of the dark noise images and constants for a given acquisition configuration, run dark_estimation.py
+To reproduce the calculation of the dark noise images and constants for a given acquisition configuration, run ```bash
+python dark_estimation.py
+```
 Note the data must first be stored on local machine - the dark acquisitions used in the prjoect were stored directly on local
 and never uploaded to the PILOT.
 
