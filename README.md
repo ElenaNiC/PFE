@@ -11,5 +11,5 @@ To reproduce the calculation of the dark noise images and constants for a given 
 
 To loop over a set of acquisition parameters, run `dark_estimation_loop.py`, adjusting it to the desired parameters.
 
-Again, the data must already be saved on local. In future the data may be uploaded to the PILOT, in which case the `download_data.py` script can be used.
+In future the data may be uploaded to the PILOT, in which case the `download_data.py` script can be used.
 
