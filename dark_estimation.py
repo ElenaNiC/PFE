@@ -5,11 +5,16 @@ import matplotlib.pyplot as plt
 import os
 from tools import binArray
 
+#%% Choose acquisition params
+# bin dark images to match convention of whatever data they'll be used for
+bin_fact = 3  # eg here bin spatiall dim (y) by 3 : 384 -> 128
+G = 18.06 # 12.04 # 6.02 # 0.0
+ti = 1.0 # 10.0 # 100.0 #1000.0
 #%% RUN TO UPDATE THE SAVED DARK IMAGES ARRAY -  BINNING CHOICE ETC
 
 # where raw dark acquisitions are stored
 data_folder = Path(r"C:/Users/ceidigh/Documents/2026-05-05_calib_bruit/dark")
-raw_data_folder = (data_folder/ f"ti_1.0ms"/ ( f"obj_12.04dB_source_No source_" f"Lc_600nm_Gr_2_Walsh_im_1x1_" f"ti_1.0ms_zoom_x1")/ "raw_data" )
+raw_data_folder = (data_folder/ f"ti_{ti}ms"/ ( f"obj_{G}dB_source_No source_" f"Lc_600nm_Gr_2_Walsh_im_1x1_" f"ti_{ti}ms_zoom_x1")/ "raw_data" )
 
 # dimensions - could of course extract to avoid hard coding blah blah blah 
 N, L = 384, 608
@@ -36,24 +41,21 @@ for k in range(n_images):
 
     dark_images[k, : ,: ] = np.load(file_path)["arr_0"].astype(np.float64)
 
-# bin dark images to match convention of whatever data they'll be used for
-bin_fact = 3  # eg here bin spatiall dim (y) by 3 : 384 -> 128
+
 dark_images = binArray(dark_images, 1, bin_fact, bin_fact, func=np.sum)
 dark_images.shape
 
 # SAVE DATA
 
 os.makedirs("CalibrationData", exist_ok=True)
-np.save(f"CalibrationData/dark_images_binned_x{bin_fact}.npy", dark_images)
+np.save(f"CalibrationData/dark_images_binned_x{bin_fact}_{ti}_{G}.npy", dark_images)
 
 #%% LOAD SAVED DARK IMAGES AND CALCULATE DARK MEAN IMAGE AND DARK VARIANCE IMAGE
-
-bin_fact = 3
-dark_images = np.load(f"CalibrationData/dark_images_binned_x{bin_fact}.npy")
+dark_images = np.load(f"CalibrationData/dark_images_binned_x{bin_fact}_{ti}_{G}.npy")
 
 mu_dark_image = dark_images.mean(axis=0)
-var_dark_image = dark_images.var(axis=0)
-sigma_dark_image = dark_images.std(axis=0)
+var_dark_image = dark_images.var(axis=0, ddof=1)
+sigma_dark_image = dark_images.std(axis=0, ddof=1)
 
 mu_dark = mu_dark_image.mean()
 var_dark = var_dark_image.mean()
@@ -99,7 +101,7 @@ plt.colorbar(im, ax=axs[2], orientation='horizontal')
 # %% SAVE DATA
 import os
 os.makedirs("CalibrationData", exist_ok=True)
-np.save(f"CalibrationData/mu_dark_image_binned_x{bin_fact}.npy", mu_dark_image)
-np.save(f"CalibrationData/var_dark_image_binned_x{bin_fact}.npy", var_dark_image)
-np.save(f"CalibrationData/sigma_dark_image_binned_x{bin_fact}.npy", sigma_dark_image)
+np.save(f"CalibrationData/mu_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", mu_dark_image)
+np.save(f"CalibrationData/var_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", var_dark_image)
+np.save(f"CalibrationData/sigma_dark_image_binned_x{bin_fact}_{ti}_{G}.npy", sigma_dark_image)
 
