@@ -1,8 +1,7 @@
 # PFE
 
 ## Dark Noise
-
-Scripts for estimating dark noise images and constants from dark acquisitions
+Dark noise images and constants were estimated from a set of dark acquisitions
 
 > **Note:** the raw dark data must already be stored on your local machine. The dark acquisitions used in this project were saved locally and were never uploaded to the PILOT.
 
