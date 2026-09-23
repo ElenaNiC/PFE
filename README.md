@@ -16,16 +16,16 @@ Where $\mathbf{Y}$ are the raw measurements, $\gamma$, $\mu_d$ and $\sigma_d^2$ 
 The measurement matrix can be split into positive and negative components:
 
 $$
-\mathbf{Y}^+ \sim \gamma\,\mathcal{P}(\mathbf{H}^+\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+\mathbf{Y}^+ \sim \gamma\mathcal{P}(\mathbf{H}^+\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
 $$
 
 $$
-\mathbf{Y}^- \sim \gamma\,\mathcal{P}(\mathbf{H}^-\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+\mathbf{Y}^- \sim \gamma\mathcal{P}(\mathbf{H}^-\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
 $$
 
 
 $$
-\mathbf{Y}^+ - \mathbf{Y}^- \sim \gamma\,\text{Skellam}(\mathbf{A}^+\mathbf{F}, \mathbf{A}^-\mathbf{F}) + \mathcal{N}(0, 2\sigma_d^2)
+\mathbf{Y}^+ - \mathbf{Y}^- \sim \gamma\text{Skellam}(\mathbf{A}^+\mathbf{F}, \mathbf{A}^-\mathbf{F}) + \mathcal{N}(0, 2\sigma_d^2)
 $$
 
 Subtracting the measurement pairs removes the fixed detector offset: the difference of two independent $\mathcal{N}(\mu_d, \sigma_d^2)$ variables is $\mathcal{N}(0, 2\sigma_d^2)$ — the dark offsets $\mu_d$ cancel and the variances sum. The counting part is Skellam-distributed (the difference of two independent Poisson variables). For the underlying counting process itself — i.e. before the gain $\gamma$ and read-noise term are reintroduced — the mean and variance are
