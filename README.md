@@ -1,6 +1,7 @@
 # PFE Results
 
 Noise Calibration of v2 Single Pixel Camera, where acquisition is modelled as: 
+
 $$
 \mathbf{Y} \sim \gamma\,\mathcal{P}(\mathbf{A}\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
 $$
