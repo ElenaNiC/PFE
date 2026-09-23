@@ -7,7 +7,13 @@ Run `download_data.py`to download raw v2 data from PILOT.
 Run `format_data.py`to format the raw data downloaded using `download_data.py`. This script reorders the raw measurements into chronological order (measures may not have been acquired in this order - acquisition order information retrieved from the relevant metadata file), checks dimensions, and bins according to bin_fact. Adjust formatting parameters according to raw data in question if necessary. The final measurement array is saved as `m_binned.npy`, and is of dimensions $(N_y \times \Lambda \times P)$, where $N_y$ is the spatial dimension, $\Lambda$ is the spectral dimension, and $P$ is the number of nonegative patterns applied (twice the number of virtual rows in the case of negative virtual matrices).
 
 ## Dark Noise
-Dark noise images and constants were estimated from a set of dark acquisitions
+Dark noise images and constants were estimated from a set of dark acquisitions:
+$$
+    \hat\mu_d(x,y) = \frac{1}{K}\sum_{k=1}^K D_k(x,y) \approx \mathbb{E}[\mathbf D],
+$$
+$$
+   \hat\sigma_d^2(x,y) = \frac{1}{K-1}\sum_{k=1}^K \big(D_k(x,y) - \hat\mu_d(x,y)\big)^2 \approx \operatorname{Var}[\mathbf D].
+$$
 
 > **Note:** the raw dark data must already be stored on your local machine. The dark acquisitions used in this project were saved locally and were never uploaded to the PILOT.
 
