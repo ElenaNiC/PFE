@@ -1,10 +1,10 @@
 # PFE
 ## Downloading raw data
 Run `download_data.py`to download raw v2 data from PILOT.
-> **Note:** the raw data for some versions (eg lisaCat) are not stored in dictionaries and so the folder had to be downloaded be hand and then formatted, see second half of script.
+> **Note:** the raw data for some versions (eg lisaCat) are not stored in dictionaries and so the folder had to be downloaded by hand and then formatted, see second half of script.
 
 ## Formating Raw Data
-Run `format_data.py`to format the raw data downloaded using `download_data.py`. This script reorders the raw measurements into cronological order (measures may not have been acquired in this order - acquisition order information retrieved fromt he relevent metadata file), checks dimensions, and bins according to bin_fact. Adjust formating parameters according to raw data in question if necessary. The final measurement array is saved as `m_binned.npy`
+Run `format_data.py`to format the raw data downloaded using `download_data.py`. This script reorders the raw measurements into chronological order (measures may not have been acquired in this order - acquisition order information retrieved from the relevant metadata file), checks dimensions, and bins according to bin_fact. Adjust formatting parameters according to raw data in question if necessary. The final measurement array is saved as `m_binned.npy`, and is of dimensions $(N_y \times \Lambda \times P)$, where $N_y$ is the spatial dimension, $\Lambda$ is the spectral dimension, and $P$ is the number of nonegative patterns applied (twice the number of virtual rows in the case of negative virtual matrices).
 
 ## Dark Noise
 Dark noise images and constants were estimated from a set of dark acquisitions
