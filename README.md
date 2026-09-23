@@ -14,6 +14,7 @@ Where $\mathbf{Y}$ are the raw measurements, $\gamma$, $\mu_d$ and $\sigma_d^2$ 
 - $\sigma_d^2$: read-noise variance.
 
 The measurement matrix can be split into positive and negative components:
+
 $$
 \mathbf{Y}^+ \sim \gamma\,\mathcal{P}(\mathbf{H}^+\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
 $$
