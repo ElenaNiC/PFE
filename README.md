@@ -18,7 +18,7 @@ $$
 $$
 \hat{\sigma}_d^2(x,y) = \frac{1}{K-1}\sum_{k=1}^K \big(D_k(x,y) - \hat{\mu}_d(x,y)\big)^2 \approx \text{Var}[\mathbf{D}]
 $$
-> **Note:** the raw dark data must already be stored on your local machine. The dark acquisitions used in this project were saved locally and were never uploaded to the PILOT.
+> **Note:** the raw dark data must already be stored on your local machine. The dark acquisitions used in this project were saved locally and never uploaded to the PILOT.
 
 
 To reproduce the calculation of the dark noise images and constants for a given acquisition configuration, run `dark_estimation.py`.
