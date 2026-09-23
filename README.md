@@ -1,5 +1,5 @@
 # PFE Results
-
+See below for how to reproduce.
 Noise Calibration of v2 Single Pixel Camera, where acquisition is modelled as: 
 
 $$
@@ -38,17 +38,18 @@ $$
 \text{Var}(\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}) = \mathbf{1}_{N_x}^\top \mathbf{F}
 $$
 
-As such, the mean of the differenced measurement recovers the ideal virtual-Hadamard signal, while its noise variance is set by the total (unmodulated) photon flux $\mathbf{1}_{N_x}.
+As such, the mean of the differenced measurement recovers the ideal virtual-Hadamard signal, while its noise variance is set by the total (unmodulated) photon flux $\mathbf{1}_{N_x}.$
 
+## Reconstruction
 
-Implementation of direct reconstruction; Tikhonov Regularisation and Neural Network Denoising on simulated and experimental data.
-Eg:
-<img width="851" height="659" alt="image" src="https://github.com/user-attachments/assets/57f60463-5bca-43c1-bcda-187fd15490b7" />
+Implementation of Direct reconstruction: $\mathbf{F}_{pinv} = \mathbf{H}^\dagger(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma}}$ 
 
-<img width="938" height="725" alt="image" src="https://github.com/user-attachments/assets/7430565e-6c5f-48d1-b0bc-658537b3ff82" />
+Tikhonov Regularisation $$
 
-See below for how to reproduce.
-## Dark Noise Estimation
+and Neural Network Denoising on simulated and experimental data.
+
+Example:
+ Noise Estimation
 
 Dark noise images and constants were estimated from a set of K dark acquisitions:
 
