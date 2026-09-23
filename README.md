@@ -1,6 +1,51 @@
 # PFE Results
-See below for how to reproduce.
 
+Noise Calibration of v2 Single Pixel Camera, where acquisition is modelled as: 
+$$
+\mathbf{Y} \sim \gamma\,\mathcal{P}(\mathbf{A}\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+$$
+
+Where $\mathbf{Y}$ are the raw measurements, $\gamma$, $\mu_d$ and $\sigma_d^2$ are estimated experimentally, $\mathbf{A}$ is the known acquisition matrix (split Hadamard), and $\mathbf{F}$ is the hyperspectral representation of the scene. 
+- $\mathcal{P}$: Poisson distribution (shot noise),
+- $\mathcal{N}$: Gaussian distribution (electronic/read noise, assumed additive and independent of the signal),
+- $\gamma$: overall system gain (counts per electron),
+- $\mu_d$: detector offset (bias level),
+- $\sigma_d^2$: read-noise variance.
+
+The measurement matrix can be split into positive and negative components:
+$$
+\mathbf{Y}^+ \sim \gamma\,\mathcal{P}(\mathbf{H}^+\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+$$
+
+$$
+\mathbf{Y}^- \sim \gamma\,\mathcal{P}(\mathbf{H}^-\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+$$
+
+
+$$
+\mathbf{Y}^+ - \mathbf{Y}^- \sim \gamma\,\text{Skellam}(\mathbf{A}^+\mathbf{F}, \mathbf{A}^-\mathbf{F}) + \mathcal{N}(0, 2\sigma_d^2)
+$$
+
+Subtracting the measurement pairs removes the fixed detector offset: the difference of two independent $\mathcal{N}(\mu_d, \sigma_d^2)$ variables is $\mathcal{N}(0, 2\sigma_d^2)$ — the dark offsets $\mu_d$ cancel and the variances sum. The counting part is Skellam-distributed (the difference of two independent Poisson variables). For the underlying counting process itself — i.e. before the gain $\gamma$ and read-noise term are reintroduced — the mean and variance are
+
+$$
+\mathbb{E}[\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}] = \mathbf{H}\mathbf{F}
+$$
+
+$$
+\text{Var}(\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}) = \mathbf{1}_{N_x}^\top \mathbf{F}
+$$
+
+As such, the mean of the differenced measurement recovers the ideal virtual-Hadamard signal, while its noise variance is set by the total (unmodulated) photon flux $\mathbf{1}_{N_x}.
+
+
+Implementation of direct reconstruction; Tikhonov Regularisation and Neural Network Denoising on simulated and experimental data.
+Eg:
+<img width="851" height="659" alt="image" src="https://github.com/user-attachments/assets/57f60463-5bca-43c1-bcda-187fd15490b7" />
+
+<img width="938" height="725" alt="image" src="https://github.com/user-attachments/assets/7430565e-6c5f-48d1-b0bc-658537b3ff82" />
+
+See below for how to reproduce.
 ## Dark Noise Estimation
 
 Dark noise images and constants were estimated from a set of K dark acquisitions:
