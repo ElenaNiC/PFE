@@ -1,7 +1,8 @@
 # PFE Results
 See below for how to reproduce.
 
-## Noise Calibration
+## Dark Noise Estimation
+
 Dark noise images and constants were estimated from a set of K dark acquisitions:
 
 $$
@@ -49,6 +50,21 @@ Estimated dark offset and noise parameters for various acquisition configuration
 
 
 ## Gain estimation
+2 methods to estimate count/photon conversion gain of camera at various configurations, with the following gain constants estimated:
+
+| Configuration | γ FFP (counts/photon) | γ TE (counts/photon) |
+|---|---|---|
+| 18.06dB | 0.4427 | 0.316 |
+| 12.04dB | 0.135 | 0.115 |
+| 6.02dB | 0.173 | 0.190 |
+| 0dB | 0.181 | 0.117 |
+
+example gain map and gain constant in region of interest for camera gain 18.06dB:
+
+<img width="394" height="198" alt="image" src="https://github.com/user-attachments/assets/0893d04b-7b1d-44f8-9864-35700ce2eab0" />
+
+<img width="551" height="414" alt="image" src="https://github.com/user-attachments/assets/ae57e8a1-6651-4d48-818c-91049e3ad0c8" />
+
 ## Downloading raw data
 Run `download_data.py`to download raw v2 data from PILOT.
 > **Note:** the raw data for some versions (eg lisaCat) are not stored in dictionaries and so the folder had to be downloaded by hand and each file read into a single array, then formatted. See second half of script.
