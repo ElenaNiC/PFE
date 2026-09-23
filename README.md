@@ -36,6 +36,7 @@ To calculate the gain images for a given camera configuration, run `conversion_g
 Two methods for calculating a constant gain parameter per camera configuration are implemented compared:
 
 **Flatfield Pair Method:** Expected value and variation of count rate calculated from Photon Transfer Curve using spatial averaging over pixels in a region of interest -> technically only two acquisitions are needed, but here I also averaged temporally (over 500 pairs) because I had 1000 acquisiitons per intensity level. 
+
 Acquire a flat-field image pair $(Y_1, Y_2)$ under identical illumination and take the difference $D = Y_1 - Y_2$. Since $Y_1, Y_2$ are independent draws of the same random variable $Y$:
 
 $$
@@ -66,7 +67,7 @@ $$
 \hat{S} = \frac{\bar{Y}_1 + \bar{Y}_2}{2}
 $$
 
-From Eq. (4.8), the dark-subtracted signal is $\gamma s$, so $\hat{S} \approx \gamma s$. Substituting $s = \hat{S}/\gamma$ into Eq. (4.12) gives
+From above, the dark-subtracted signal is $\gamma s$, so $\hat{S} \approx \gamma s$. Substituting $s = \hat{S}/\gamma$ gives
 
 $$
 \hat{\sigma}^2 = \gamma^2\left(\frac{\hat{S}}{\gamma}\right) + \sigma_d^2 = \gamma\hat{S} + \sigma_d^2
@@ -83,6 +84,8 @@ $$
 $$
 
 Plotting $(\hat{\mu}, \hat{\sigma}^2)$ pairs and fitting a line gives the gain from the slope. This can be done per pixel, for a full gain map, or using the spatial average of the mean and variance images, for a single scalar gain.
+
+Both methods are implemented in the python script, with adjustable parameters to take into account the various acquisition and reconstruction parameters (i.e; camera gain, binning etc)
 
 ## Image covariance prior
 
