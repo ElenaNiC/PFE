@@ -1,4 +1,54 @@
-# PFE
+# PFE Results
+See below for how to reproduce.
+
+## Noise Calibration
+Dark noise images and constants were estimated from a set of K dark acquisitions:
+
+$$
+\hat{\mu}_d(x,y) = \frac{1}{K}\sum_{k=1}^K D_k(x,y) \approx \mathbb{E}[\mathbf{D}]
+$$
+
+$$
+\hat{\sigma}_d^2(x,y) = \frac{1}{K-1}\sum_{k=1}^K \big(D_k(x,y) - \hat{\mu}_d(x,y)\big)^2 \approx \text{Var}[\mathbf{D}]
+$$
+
+Estimated dark offset and noise parameters for various acquisition configurations of the v2 single pixel camera:
+
+**18.06dB**
+
+| | $\bar\mu_d$ | $\bar\sigma_d^2$ | $\bar\sigma_d$ |
+|---|---|---|---|
+| 1.0ms | 707.21 ± 28.25 | 46.42 ± 12.33 | 6.76 ± 0.88 |
+| 10.0ms | 717.94 ± 27.91 | 48.15 ± 12.89 | 6.88 ± 0.90 |
+| 100.0ms | 804.88 ± 30.38 | 59.37 ± 18.40 | 7.62 ± 1.17 |
+| 1000.0ms | 2054.86 ± 146.29 | 454.38 ± 63.26 | 21.26 ± 1.51 |
+
+**12.04dB**
+
+| | $\bar\mu_d$ | $\bar\sigma_d^2$ | $\bar\sigma_d$ |
+|---|---|---|---|
+| 1.0ms | 243.42 ± 11.94 | 24.30 ± 23.20 | 4.38 ± 2.27 |
+| 10.0ms | 247.03 ± 11.02 | 21.15 ± 21.80 | 4.04 ± 2.19 |
+| 100.0ms | 270.86 ± 12.05 | 24.41 ± 20.63 | 4.53 ± 1.98 |
+
+**6.02dB**
+
+| | $\bar\mu_d$ | $\bar\sigma_d^2$ | $\bar\sigma_d$ |
+|---|---|---|---|
+| 1.0ms | 178.21 ± 8.37 | 11.05 ± 12.09 | 3.06 ± 1.30 |
+| 10.0ms | 181.01 ± 8.18 | 10.70 ± 12.55 | 3.00 ± 1.31 |
+| 100.0ms | 207.62 ± 12.01 | 30.64 ± 19.32 | 5.23 ± 1.82 |
+
+**0.0dB**
+
+| | $\bar\mu_d$ | $\bar\sigma_d^2$ | $\bar\sigma_d$ |
+|---|---|---|---|
+| 1.0ms | 91.92 ± 5.53 | 15.54 ± 6.32 | 3.85 ± 0.85 |
+| 10.0ms | 96.51 ± 4.86 | 12.44 ± 6.72 | 3.38 ± 1.02 |
+| 100.0ms | 124.17 ± 2.58 | 2.23 ± 2.56 | 1.32 ± 0.71 |
+
+
+## Gain estimation
 ## Downloading raw data
 Run `download_data.py`to download raw v2 data from PILOT.
 > **Note:** the raw data for some versions (eg lisaCat) are not stored in dictionaries and so the folder had to be downloaded by hand and each file read into a single array, then formatted. See second half of script.
@@ -101,5 +151,5 @@ Pseudoinverse and tikhonov reconstruction is implemented, with the option to app
 The reconstructed cubes are plotted as the sum over wavelength channels and per wavelength channel individually. 
 
 
-# Training Denoiser
+## Training Denoiser
 To train a UNet() denoiser, run `train.py` with the desired parameters. Trained weights will be saved to a 'model' folder and can then be used during reconstruction. 
