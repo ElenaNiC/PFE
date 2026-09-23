@@ -62,7 +62,7 @@ for ds in datasets:
 from tools import load_experiment
 import numpy as np
 
-# download folder from PILOT, saved to the following path
+# download spectral data folder from PILOT, saved to the following path
 # choose data to read in 
 selected_paths = {
     
@@ -98,6 +98,6 @@ spatial_data = data["spatial_data"]
 
 import os
 os.makedirs("data/cat", exist_ok=True)
-np.save("data/cat/formatted_spectral_data.npy", spectral_data_all)
+np.save("data/cat/m_binned.npy", spectral_data_all)
 
 # %%

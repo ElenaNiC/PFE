@@ -31,3 +31,18 @@ Two methods for calculating a constant gain parameter per camera configuration a
 **Flatfield Pair Method:** Expected value and variation of count rate calculated from Photon Transfer Curve using spatial averaging over pixels in a region of interest -> technically only two acquisitions are needed, but here I also averaged temporally (over 500 pairs) because I had 1000 acquisiitons per intensity level. 
 
 **Temporal Estimate Method:** Gain value calculated per pixel from expected value and variation images, which are the temporal everage over 1000 aqcuisitions. The constant gain is then the spatial average within a region of interest. 
+
+## Image covariance prior
+
+To calculate the 1D covariance prior over the rows of a set of natural images (ImageNet dataset) run `covariance_prior.py`with the desired parameters (image size, normalisation etc). The resulting covariance matrix is saved to a data folder. 
+
+## Reconstruction
+Ruņ `reconstruction.py` to reconstruct data that has been downloaded from PILOT using `download_data.py`and formatted using `format_data.py`. 
+
+Pseudoinverse and tikhonov reconstruction is implemented, with the option to apply denoising using a UNet() trained by running `train.py`and the desired parameters. 
+
+The reconstructed cubes are plotted as the sum over wavelength channels and per wavelength channel individually. 
+
+
+# Training Denoiser
+To train a UNet() denoiser, run `train.py` with the desired parameters. Trained weights will be saved to a 'model' folder and can then be used during reconstruction. 
