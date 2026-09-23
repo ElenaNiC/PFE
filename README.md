@@ -37,7 +37,7 @@ To calculate the gain images for a given camera configuration, run `conversion_g
 
 Two methods for calculating a constant gain parameter per camera configuration are implemented compared:
 
-**Flatfield Pair Method:** Expected value and variation of count rate calculated from Photon Transfer Curve using spatial averaging over pixels in a region of interest -> technically only two acquisitions are needed, but here I also averaged temporally (over 500 pairs) because I had 1000 acquisiitons per intensity level. 
+**Flatfield Pair Method:** Expected value and variation of count rate calculated from Photon Transfer Curve using spatial averaging over pixels in a region of interest $->$ technically only two acquisitions are needed, but here I also averaged temporally (over 500 pairs) because I had 1000 acquisitions per intensity level. 
 
 Acquire a flat-field image pair $(Y_1, Y_2)$ under identical illumination and take the difference $D = Y_1 - Y_2$. Since $Y_1, Y_2$ are independent draws of the same random variable $Y$:
 
