@@ -9,12 +9,12 @@ Run `format_data.py`to format the raw data downloaded using `download_data.py`. 
 ## Dark Noise
 Dark noise images and constants were estimated from a set of dark acquisitions:
 $$
-    \hat\mu_d(x,y) = \frac{1}{K}\sum_{k=1}^K D_k(x,y) \approx \mathbb{E}[\mathbf D],
-$$
-$$
-   \hat\sigma_d^2(x,y) = \frac{1}{K-1}\sum_{k=1}^K \big(D_k(x,y) - \hat\mu_d(x,y)\big)^2 \approx \operatorname{Var}[\mathbf D].
+\hat{\mu}_d(x,y) = \frac{1}{K}\sum_{k=1}^K D_k(x,y) \approx \mathbb{E}[\mathbf{D}]
 $$
 
+$$
+\hat{\sigma}_d^2(x,y) = \frac{1}{K-1}\sum_{k=1}^K \big(D_k(x,y) - \hat{\mu}_d(x,y)\big)^2 \approx \operatorname{Var}[\mathbf{D}]
+$$
 > **Note:** the raw dark data must already be stored on your local machine. The dark acquisitions used in this project were saved locally and were never uploaded to the PILOT.
 
 
