@@ -42,7 +42,7 @@ As such, the mean of the differenced measurement recovers the ideal virtual-Hada
 
 ## Reconstruction
 
-Implementation of Direct reconstruction: $\mathbf{F}_{pinv} = \mathbf{H}^\dagger(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma}}$ 
+Implementation of Direct reconstruction: $\mathbf{F}_{pinv} = \mathbf{H}^\dagger(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma})$ 
 
 Tikhonov Regularisation $$
 
