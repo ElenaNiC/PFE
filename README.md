@@ -73,6 +73,8 @@ $$
 Where $\mathcal{G}$ is the pretrained model, in this case a Unet(), and $\theta$ is the learned weights. The network is trained on simulated data.
 
 Example:
+
+
 <img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/bccdbb45-2f77-4553-a2b8-fc9c44182c74" />
 
 <img width="650" height="511" alt="image" src="https://github.com/user-attachments/assets/f3976618-d716-4fd6-8776-2a3e22c5a2dd" />
