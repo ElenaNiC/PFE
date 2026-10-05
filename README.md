@@ -5,81 +5,8 @@ See below for how to reproduce PFE:
 - Reconstruction (Pseudoinverse, Tikhonov Regularisation & Denoising) on simulated and experimental data
 - Includes scripts to access, download and format raw experimental data to recalculate noise parameters if desired
 
-The following section outlines the mathematical model and reconstruction expressions considered, as well as example reconstructions.
-
-Section 2 outlines how to use each script, and section 3 gives an overview of the methods and the results of the noise calibration.
-
-# Model
-Acquisition is modelled as: 
-
-$$
-\mathbf{Y} \sim \gamma\,\mathcal{P}(\mathbf{A}\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
-$$
-
-Where $\mathbf{Y}$ are the raw measurements, $\gamma$, $\mu_d$ and $\sigma_d^2$ are estimated experimentally, $\mathbf{A}$ is the known acquisition matrix (split Hadamard), and $\mathbf{F}$ is the hyperspectral representation of the scene. 
-- $\mathcal{P}$: Poisson distribution (shot noise),
-- $\mathcal{N}$: Gaussian distribution (electronic/read noise, assumed additive and independent of the signal),
-- $\gamma$: overall system gain (counts per electron),
-- $\mu_d$: detector offset (bias level),
-- $\sigma_d^2$: read-noise variance.
-
-The measurement matrix can be split into positive and negative components:
-
-$$
-\mathbf{Y}^+ \sim \gamma\mathcal{P}(\mathbf{H}^+\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
-$$
-
-$$
-\mathbf{Y}^- \sim \gamma\mathcal{P}(\mathbf{H}^-\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
-$$
-
-
-$$
-\mathbf{Y}^+ - \mathbf{Y}^- \sim \gamma\text{Skellam}(\mathbf{A}^+\mathbf{F}, \mathbf{A}^-\mathbf{F}) + \mathcal{N}(0, 2\sigma_d^2)
-$$
-
-Subtracting the measurement pairs removes the fixed detector offset: the difference of two independent $\mathcal{N}(\mu_d, \sigma_d^2)$ variables is $\mathcal{N}(0, 2\sigma_d^2)$ — the dark offsets $\mu_d$ cancel and the variances sum. The counting part is Skellam-distributed (the difference of two independent Poisson variables). For the underlying counting process itself — i.e. before the gain $\gamma$ and read-noise term are reintroduced — the mean and variance are
-
-$$
-\mathbb{E}[\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}] = \mathbf{H}\mathbf{F}
-$$
-
-$$
-\text{Var}(\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}) = \mathbf{1}_{N_x}^\top \mathbf{F}
-$$
-
-As such, the mean of the differenced measurement recovers the ideal virtual-Hadamard signal, while its noise variance is set by the total (unmodulated) photon flux $\mathbf{1}_{N_x}.$
-
-## Reconstruction
-
-Implementation of Direct reconstruction:
-
-$$\mathbf{F}_{pinv} = \mathbf{H}^\dagger\left(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma}\right)$$
-
-Tikhonov Regularisation
-
-$$
-\hat{\mathbf{F}}_{tik} = \Sigma\mathbf{H}^\top(\mathbf{H}\Sigma\mathbf{H}^\top + \Gamma)^{-1}\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma\alpha(\lambda)}
-$$
-
-and Neural Network Denoising on simulated and experimental data.
-
-To further reduce noise in the reconstructed hypercube, a pretrained U-Net $\mathcal{G}_\theta$ can be applied to the Tikhonov reconstruction:
-
-$$
-\tilde{\mathbf{F}} = \mathcal{G}_\theta(\hat{\mathbf{F}}_{tik})
-$$
-
-Where $\mathcal{G}$ is the pretrained model, in this case a Unet(), and $\theta$ is the learned weights. The network is trained on simulated data.
-
-Example:
-
-
-<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/bccdbb45-2f77-4553-a2b8-fc9c44182c74" />
-
-<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/f3976618-d716-4fd6-8776-2a3e22c5a2dd" />
-
-<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/5d0e3144-291f-4151-929f-f707506a1592" />
+The following section outlines how to use each script, section 2 outlines the mathematical model and reconstruction expressions considered, as well as example reconstructions, 
+and section 3 gives an overview of the methods and the results of the noise calibration.
 
 
 # How to use scripts
@@ -188,6 +115,82 @@ The reconstructed cubes are plotted as the sum over wavelength channels and per 
 
 ## Training Denoiser
 To train a UNet() denoiser, run `train.py` with the desired parameters. Trained weights will be saved to a 'model' folder and can then be used during reconstruction. 
+
+
+
+# Model
+Acquisition is modelled as: 
+
+$$
+\mathbf{Y} \sim \gamma\,\mathcal{P}(\mathbf{A}\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+$$
+
+Where $\mathbf{Y}$ are the raw measurements, $\gamma$, $\mu_d$ and $\sigma_d^2$ are estimated experimentally, $\mathbf{A}$ is the known acquisition matrix (split Hadamard), and $\mathbf{F}$ is the hyperspectral representation of the scene. 
+- $\mathcal{P}$: Poisson distribution (shot noise),
+- $\mathcal{N}$: Gaussian distribution (electronic/read noise, assumed additive and independent of the signal),
+- $\gamma$: overall system gain (counts per electron),
+- $\mu_d$: detector offset (bias level),
+- $\sigma_d^2$: read-noise variance.
+
+The measurement matrix can be split into positive and negative components:
+
+$$
+\mathbf{Y}^+ \sim \gamma\mathcal{P}(\mathbf{H}^+\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+$$
+
+$$
+\mathbf{Y}^- \sim \gamma\mathcal{P}(\mathbf{H}^-\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
+$$
+
+
+$$
+\mathbf{Y}^+ - \mathbf{Y}^- \sim \gamma\text{Skellam}(\mathbf{A}^+\mathbf{F}, \mathbf{A}^-\mathbf{F}) + \mathcal{N}(0, 2\sigma_d^2)
+$$
+
+Subtracting the measurement pairs removes the fixed detector offset: the difference of two independent $\mathcal{N}(\mu_d, \sigma_d^2)$ variables is $\mathcal{N}(0, 2\sigma_d^2)$ — the dark offsets $\mu_d$ cancel and the variances sum. The counting part is Skellam-distributed (the difference of two independent Poisson variables). For the underlying counting process itself — i.e. before the gain $\gamma$ and read-noise term are reintroduced — the mean and variance are
+
+$$
+\mathbb{E}[\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}] = \mathbf{H}\mathbf{F}
+$$
+
+$$
+\text{Var}(\mathbf{A}^+\mathbf{F} - \mathbf{A}^-\mathbf{F}) = \mathbf{1}_{N_x}^\top \mathbf{F}
+$$
+
+As such, the mean of the differenced measurement recovers the ideal virtual-Hadamard signal, while its noise variance is set by the total (unmodulated) photon flux $\mathbf{1}_{N_x}.$
+
+## Reconstruction
+
+Implementation of Direct reconstruction:
+
+$$\mathbf{F}_{pinv} = \mathbf{H}^\dagger\left(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma}\right)$$
+
+Tikhonov Regularisation
+
+$$
+\hat{\mathbf{F}}_{tik} = \Sigma\mathbf{H}^\top(\mathbf{H}\Sigma\mathbf{H}^\top + \Gamma)^{-1}\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma\alpha(\lambda)}
+$$
+
+and Neural Network Denoising on simulated and experimental data.
+
+To further reduce noise in the reconstructed hypercube, a pretrained U-Net $\mathcal{G}_\theta$ can be applied to the Tikhonov reconstruction:
+
+$$
+\tilde{\mathbf{F}} = \mathcal{G}_\theta(\hat{\mathbf{F}}_{tik})
+$$
+
+Where $\mathcal{G}$ is the pretrained model, in this case a Unet(), and $\theta$ is the learned weights. The network is trained on simulated data.
+
+Example:
+
+
+<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/bccdbb45-2f77-4553-a2b8-fc9c44182c74" />
+
+<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/f3976618-d716-4fd6-8776-2a3e22c5a2dd" />
+
+<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/5d0e3144-291f-4151-929f-f707506a1592" />
+
+
 
 # Noise Estimation
 
