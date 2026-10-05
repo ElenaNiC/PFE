@@ -1,6 +1,7 @@
 # PFE Results
-See below for how to reproduce.
-Noise Calibration of v2 Single Pixel Camera, where acquisition is modelled as: 
+See below for how to reproduce PFE:  noise calibration of v2 Single Pixel Camera from experimental acquisitons, reconstruction (Pseudoinverse, Tikhonov Regularisation & Denoising) on simulated and experimental data. Includes scripts to access, download and format raw experimental data to recalculate noise parameters if desired.
+
+Acquisition is modelled as: 
 
 $$
 \mathbf{Y} \sim \gamma\,\mathcal{P}(\mathbf{A}\mathbf{F}) + \mathcal{N}(\mu_d, \sigma_d^2)
@@ -42,16 +43,25 @@ As such, the mean of the differenced measurement recovers the ideal virtual-Hada
 
 ## Reconstruction
 
-Implementation of Direct reconstruction: 
+Implementation of Direct reconstruction:
 
-$$\mathbf{F}_{pinv} = \mathbf{H}^\dagger(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma})$$
+$$\mathbf{F}_{pinv} = \mathbf{H}^\dagger\left(\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma}\right)$$
 
-Tikhonov Regularisation 
+Tikhonov Regularisation
 
 $$
+\hat{\mathbf{F}}_{tik} = \Sigma\mathbf{H}^\top(\mathbf{H}\Sigma\mathbf{H}^\top + \Gamma)^{-1}\frac{\mathbf{Y}^+-\mathbf{Y}^-}{\gamma\alpha(\lambda)}
 $$
 
 and Neural Network Denoising on simulated and experimental data.
+
+To further reduce noise in the reconstructed hypercube, a pretrained U-Net $\mathcal{G}_\theta$ can be applied to the Tikhonov reconstruction:
+
+$$
+\tilde{\mathbf{F}} = \mathcal{G}_\theta(\hat{\mathbf{F}}_{tik})
+$$
+
+Where $\mathcal{G}$ is the pretrained model, in this case a Unet(), and $\theta$ is the learned weights. The network is trained on simulated data: Tikhonov reconstructions generated using SPYRIT are paired with the corresponding...
 
 Example:
 
@@ -59,10 +69,9 @@ Example:
 
 
 
+Noise Estimation
 
- Noise Estimation
-
-Dark noise images and constants were estimated from a set of K dark acquisitions:
+Dark noise images and constants used in the reconstruction process were estimated from a set of K dark acquisitions:
 
 $$
 \hat{\mu}_d(x,y) = \frac{1}{K}\sum_{k=1}^K D_k(x,y) \approx \mathbb{E}[\mathbf{D}]
