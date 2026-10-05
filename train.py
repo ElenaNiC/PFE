@@ -28,15 +28,15 @@ from spyrit.misc.disp import imagesc
 
 # %% PARAMETERS
 
-alpha = 20 # level a which lines are present
+alpha = 100 # photon intensity
 K = 128 # if you want to downsample
 N = 128
 
 # Noise parameters - as in experimentation
 g =  0.115   # 0.1123
 
-mu = np.load("data/mu_dark_image_binned_x3.npy")
-var = np.load("data/var_dark_image_binned_x3.npy")
+mu = np.load("CalibrationData/dark/mu_dark_image_binned_x3_1.0_12.04.npy")
+var = np.load("CalibrationData/dark/var_dark_image_binned_x3_1.0_12.04.npy")
 
 # for unet do everything in photons: 
 gamma = 1
@@ -78,30 +78,35 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 H  = walsh_matrix(N)
 H = torch.from_numpy(H).to(device)
 
-meas_op = LinearSplit(H[0:K, :], noise_model = PoissonGaussian(alpha=alpha, mu=mu_dark_image, g=gamma, sigma=sig_dark_image), device = device)
+# meas_op = LinearSplit(H[0:K, :], noise_model = PoissonGaussian(alpha=alpha, mu=mu_dark_image, g=gamma, sigma=sig_dark_image), device = device)
+meas_op = LinearSplit(H[0:K, :], noise_model = PoissonGaussian(alpha=alpha), device = device)
 prep_op = UnsplitRescale(alpha)
 
 denoiser = torch.nn.Sequential(OrderedDict({"denoi": Unet()}))
+
+# choose what type of net - remember to update save file name!!! realistically should be automatic
+
+#model = PinvNet(meas_op, prep=Unsplit(), denoi = denoiser, store_H_pinv = True, device = device)
 #model = TikhoNet(meas_op, prep = prep_op , sigma=Sigma, device = device) 
-model = TikhoNet(meas_op, prep = prep_op , sigma=Sigma, denoi = denoiser, device = device) 
+model = TikhoNet(meas_op, prep = prep_op , sigma=Sigma,  denoi = denoiser, device = device) 
 
-#%% CHECK
-model.eval()
-model = model.to(device)
+#%% CHECK - ie run without denoiser to check input 
+# model.eval()
+# model = model.to(device)
 
-images, labels = next(iter(dataloaders['train']))
-x = images.to(device)
+# images, labels = next(iter(dataloaders['train']))
+# x = images.to(device)
 
 
-with torch.no_grad():
-    #prep
-    y = model.acquire(x)
-    x_tiko = model.reconstruct(y/gamma)
-    x_tiko_pinv = (x_tiko).detach().cpu().numpy().squeeze() 
-del model 
+# with torch.no_grad():
+#     #prep
+#     y = model.acquire(x)
+#     x_hat = model.reconstruct(y/gamma)
+#     x_tilde = (x_hat).detach().cpu().numpy().squeeze() 
+# del model 
 
-plt.imshow(x_tiko_pinv[5,:,:])
-plt.colorbar()
+# plt.imshow(x_tilde[5,:,:])
+# plt.colorbar()
 #%%
 
 from spyrit.core.train import Weight_Decay_Loss
@@ -152,7 +157,7 @@ model, train_info = train_model(
 
 from spyrit.core.train import save_net
 
-title = f"TIKHO_UNET_{h}x{h}_K=128_alpha{alpha}_20epochs"
+title = f"TIKOgit status_UNET_{h}x{h}_K=128_alpha{alpha}_20epochs"
 
 Path(model_root).mkdir(parents=True, exist_ok=True)
 model_path = model_root / (title + ".pth")
