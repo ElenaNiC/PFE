@@ -73,12 +73,12 @@ $$
 Where $\mathcal{G}$ is the pretrained model, in this case a Unet(), and $\theta$ is the learned weights. The network is trained on simulated data.
 
 Example:
+<img width="650" height="460" alt="image" src="https://github.com/user-attachments/assets/bccdbb45-2f77-4553-a2b8-fc9c44182c74" />
 
-<img width="950" height="672" alt="image" src="https://github.com/user-attachments/assets/bccdbb45-2f77-4553-a2b8-fc9c44182c74" />
+<img width="650" height="511" alt="image" src="https://github.com/user-attachments/assets/f3976618-d716-4fd6-8776-2a3e22c5a2dd" />
 
-<img width="950" height="746" alt="image" src="https://github.com/user-attachments/assets/f3976618-d716-4fd6-8776-2a3e22c5a2dd" />
+<img width="650" height="430" alt="image" src="https://github.com/user-attachments/assets/5d0e3144-291f-4151-929f-f707506a1592" />
 
-<img width="950" height="629" alt="image" src="https://github.com/user-attachments/assets/5d0e3144-291f-4151-929f-f707506a1592" />
 
 # How to use scripts
 
